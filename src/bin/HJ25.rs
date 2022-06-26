@@ -10,13 +10,13 @@ fn main() {
             break;
         }
         std::io::stdin().read_line(&mut R).unwrap();
-        let mut i_vec: Vec<_>= I.trim().split(' ').collect();
-        let mut r_vec: Vec<_>= R.trim().split(' ').collect();
+        let i_vec: Vec<_>= I.trim().split(' ').collect();
+        let r_vec: Vec<_>= R.trim().split(' ').collect();
 
-        let mut i_records: Vec<String> = i_vec[1..].into_iter()
+        let i_records: Vec<String> = i_vec[1..].into_iter()
                             .map(|i| i.to_string())
                             .collect();
-        let mut r_records: Vec<String> = r_vec[1..].into_iter()
+        let r_records: Vec<String> = r_vec[1..].into_iter()
                                 .map(|r| r.to_string())
                                 .collect();
         let mut r_set = BTreeSet::new();
