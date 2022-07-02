@@ -13,7 +13,6 @@ fn main() {
             once.insert(c, i);
         }
     });
-
     if once.is_empty() {
         println!("-1");
     } else {
