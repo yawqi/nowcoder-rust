@@ -50,7 +50,6 @@ fn evaluate(s: &str) -> (i32, usize) {
             }
             '{' | '(' | '[' => {
                 let (n2, len) = evaluate(&s[i+1..]);
-                operands.push(n2);
                 i += len + 1;
                 is_operand = true;
                 if prev_op == '*' || prev_op == '/' {
@@ -104,3 +103,4 @@ fn evaluate(s: &str) -> (i32, usize) {
     }
     (n1, ret_len)
 }
+// 5-3+9*6*(6-10-2)

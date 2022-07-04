@@ -4,8 +4,8 @@ fn main() {
         .read_line(&mut n);
     let n = n.trim().parse::<u32>().unwrap();
     let mut count = 0;
-    for i in 24..n {
-        let mut sum = 0;
+    for i in 2..n {
+        let mut sum = 1;
         for j in 2..=i/2 {
             if i % j == 0 {
                 let k = i / j;
