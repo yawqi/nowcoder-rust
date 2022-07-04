@@ -1,38 +1,13 @@
-use std::collections::{HashMap, HashSet};
+use std::{collections::{HashMap, HashSet}, process::Command};
 fn main() {
     let mut map = HashMap::new();
-    let commands = vec!["reset", "reset board", "board add", "board delete", "reboot backplane", "backplane abort"];
+    let commands = vec![vec!["reset"], vec!["reset", "board"], vec!["board", "add"], vec!["board", "delete"], vec!["reboot", "backplane"], vec!["backplane", "abort"]];
     let results = vec!["reset what", "board fault", "where to add", "no board at all", "impossible", "install first"];
     for i in 0..commands.len() {
-        map.insert(commands[i], results[i]);
+        map.insert(commands[i].clone(), results[i]);
     }
-    let first_part = vec!["reset", "board", "reboot", "backplane"];
-    let second_part = vec!["board", "add", "delete", "backplane", "abort"];
-    let mut first_map = HashMap::new();
-    let mut first_set = HashSet::new();
-    for first in first_part {
-        for len in 1..=first.len() {
-            if first_set.contains(&first[0..len]) {
-                first_map.remove(&first[0..len]);
-            } else {
-                first_map.insert(&first[0..len], first);
-                first_set.insert(&first[0..len]);
-            }
-        }
-    }
-    let mut second_map = HashMap::new();
-    let mut second_set = HashSet::new();
-    for second in second_part {
-        for len in 1..=second.len() {
-            if second_set.contains(&second[0..len]) {
-                second_map.remove(&second[0..len]);
-            } else {
-                second_map.insert(&second[0..len], second);
-                second_set.insert(&second[0..len]);
-            }
-        }
-    }
-    loop {
+
+    'outer: loop {
         let mut s = String::new();
         let bytes = std::io::stdin()
             .read_line(&mut s).unwrap();
@@ -40,30 +15,39 @@ fn main() {
             break;
         }
         let v = s.trim().split(" ").collect::<Vec<_>>();
-        let first = match first_map.get(v[0]) {
-            Some(word) => word,
-            None => {
-                println!("unknown command");
-                continue;
-            }
-        };
-        let second = if v.len() > 1 {
-            match second_map.get(v[1]) {
-                Some(word) => word,
-                None => {
-                    println!("unknown command");
-                    continue;
+        let cmds = {
+            let mut choose = vec![];
+            for command in &commands {
+                if command[0].starts_with(&v[0]) && command.len() == v.len() {
+                    choose.push(command.clone());
                 }
             }
-        } else {
-            ""
+            choose
         };
-        let mut s = first.to_string();
-        if second.len() != 0 {
-            s.push(' ');
-            s.push_str(second);
+
+        if cmds.is_empty() || (cmds.len() > 1 && v.len() == 1) {
+            println!("unknown command");
+            continue 'outer;
         }
-        match map.get(&s[..]) {
+
+        let cmd = if v.len() > 1 {
+            let mut choose = vec![];
+            for cmd in cmds {
+                if cmd[1].starts_with(v[1]) {
+                    if choose.is_empty() {
+                        choose = cmd.clone();
+                    } else {
+                        println!("unknown command");
+                        continue 'outer;
+                    }
+                }
+            }
+            choose
+        } else {
+            cmds[0].clone()
+        };
+
+        match map.get(&cmd) {
             Some(ret) => println!("{}", ret),
             None => println!("unknown command"),
         }
